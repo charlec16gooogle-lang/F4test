@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "can.h": "c"
+    },
+    "cmake.sourceDirectory": "D:/F4test/Drivers/CMSIS/NN"
+}
