@@ -63,7 +63,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int can_num = 0;
+
 /* USER CODE END 0 */
 
 /**
@@ -123,20 +123,9 @@ int main(void)
   while (1)
   {
 		usart_test();
-		//CAN测试
-		switch (can_num) {
-      case 0:
-        /* code */
-        break;
-      case 1:
-        HAL_CAN_AddTxMessage(&hcan1, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
-        break;
-      case 2:
-        HAL_CAN_AddTxMessage(&hcan2, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
-        break;
-      default:
-        break;
-    }
+		//CAN测试 - CAN1 和 CAN2 持续发送，用于检测板子
+		HAL_CAN_AddTxMessage(&hcan1, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
+		HAL_CAN_AddTxMessage(&hcan2, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
     HAL_Delay(500);
 		
 		//LED测试
