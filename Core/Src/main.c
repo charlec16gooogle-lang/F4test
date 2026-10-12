@@ -31,6 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "beep.h"
+#include "led.h"
 #include "stdio.h"
 /* USER CODE END Includes */
 
@@ -133,10 +134,10 @@ int main(void)
 	CAN_SendTest(); // CAN1 / CAN2 持续发送 "OK" 用于板级检测
 	HAL_Delay(500);
 
-	// LED测试（分开测时开启）
+	// LED测试
 //	led_test();
 
-	// 串口发送测试（当前 Debug：发送一段字符串）
+	// 串口发送测试
 //	uint8_t tx_msg[] = "Debug Test!\r\n";
 //	HAL_StatusTypeDef tx_status;
 //	tx_status = HAL_UART_Transmit(&huart1, tx_msg, sizeof(tx_msg)-1, 100);

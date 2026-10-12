@@ -399,4 +399,42 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 
+/**
+ * @brief 三路串口回环测试
+ *        TX 发出 0x5A，RX 接收后比对；
+ *        短接成功则对应 LED 点亮，断开则熄灭
+ */
+void usart_test(void)
+{
+	uint8_t tx_data = 0x5A;
+	uint8_t rx_data = 0x00;
+
+	/* USART1 → LED1 */
+	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE))
+		__HAL_UART_CLEAR_OREFLAG(&huart1);
+	while (HAL_UART_Receive(&huart1, &rx_data, 1, 0) == HAL_OK) {}
+	HAL_UART_Transmit(&huart1, &tx_data, 1, 10);
+	HAL_GPIO_WritePin(GPIOA, LED1_Pin,
+		(HAL_UART_Receive(&huart1, &rx_data, 1, 2) == HAL_OK && rx_data == tx_data)
+		? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+	/* USART2 → LED2 */
+	if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
+		__HAL_UART_CLEAR_OREFLAG(&huart2);
+	while (HAL_UART_Receive(&huart2, &rx_data, 1, 0) == HAL_OK) {}
+	HAL_UART_Transmit(&huart2, &tx_data, 1, 10);
+	HAL_GPIO_WritePin(GPIOA, LED2_Pin,
+		(HAL_UART_Receive(&huart2, &rx_data, 1, 2) == HAL_OK && rx_data == tx_data)
+		? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+	/* USART3 → LED3 */
+	if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_ORE))
+		__HAL_UART_CLEAR_OREFLAG(&huart3);
+	while (HAL_UART_Receive(&huart3, &rx_data, 1, 0) == HAL_OK) {}
+	HAL_UART_Transmit(&huart3, &tx_data, 1, 10);
+	HAL_GPIO_WritePin(GPIOA, LED3_Pin,
+		(HAL_UART_Receive(&huart3, &rx_data, 1, 2) == HAL_OK && rx_data == tx_data)
+		? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
 /* USER CODE END 1 */
