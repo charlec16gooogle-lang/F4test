@@ -52,7 +52,15 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+static uint8_t CAN_TxData[8] = {'O', 'K', 0, 0, 0, 0, 0, 0};
+static uint32_t CAN_TxMailBox = 0;
+static CAN_TxHeaderTypeDef CAN_TxHeader = {
+	.StdId = 0x123,
+	.ExtId = 0x00,
+	.IDE   = CAN_ID_STD,
+	.RTR   = CAN_RTR_DATA,
+	.DLC   = 8,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +71,18 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+/**
+ * @brief CAN测试发送：CAN1 和 CAN2 各发一帧 "OK"
+ */
+static void CAN_SendTest(void)
+{
+	if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0) {
+		HAL_CAN_AddTxMessage(&hcan1, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
+	}
+	if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0) {
+		HAL_CAN_AddTxMessage(&hcan2, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -103,41 +122,17 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-	BEEP_Setup();       							 //蜂鸣器测试
-	
-	uint8_t CAN_TxData[8] = {0};
-	CAN_TxData[0] = 'O';
-	CAN_TxData[1] = 'K';
-	uint32_t CAN_TxMailBox = 0; // 发送邮箱编号
-	CAN_TxHeaderTypeDef CAN_TxHeader;
-	CAN_TxHeader.StdId = 0x123;
-	CAN_TxHeader.ExtId = 0x00; 
-	CAN_TxHeader.IDE = CAN_ID_STD;
-	CAN_TxHeader.RTR = CAN_RTR_DATA;
-	CAN_TxHeader.DLC = 8;
-
+	BEEP_Setup(); // 上电蜂鸣器自检
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		usart_test();
-		//CAN测试 - CAN1 和 CAN2 持续发送，用于检测板子
-		HAL_CAN_AddTxMessage(&hcan1, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
-		HAL_CAN_AddTxMessage(&hcan2, &CAN_TxHeader, CAN_TxData, &CAN_TxMailBox);
-    HAL_Delay(500);
-		
-		//LED测试
-//		led_test();
+	usart_test();   // 串口回环测试：短接成功则对应 LED 点亮
+	CAN_SendTest(); // CAN1 / CAN2 持续发送 "OK" 用于板级检测
+	HAL_Delay(500);
 
-    //串口发送测试
-// 当前 Debug 测试代码：发送一段字符串
-  //uint8_t tx_msg[] = "Debug Test!\r\n";
-  // 定义一个变量来接收发送结果
-  //HAL_StatusTypeDef tx_status; 
-  //tx_status = HAL_UART_Transmit(&huart1, tx_msg, sizeof(tx_msg)-1, 100);
-		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
